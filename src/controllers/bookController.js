@@ -5,11 +5,6 @@ import Book from '../models/Book.js';
 export const addBook = async (req, res, next) => {
   const { title, author, isbn } = req.body;
   try {
-      const isbnExists = await Book.findOne({ isbn });
-      if (isbnExists) {
-        return res.status(400).json({ message: 'ISBN must be unique' });
-      }
-
     if (!req.user || !req.user.username) {
       return res.status(401).json({ message: 'Authentication required or invalid user data' });
     }
@@ -20,15 +15,38 @@ export const addBook = async (req, res, next) => {
   }
 };
 
-// Fetch all books (instead of only available)
+// Fetch all books with search filter by title or author
+// Fixed: Use $or for combined title/author search; return empty [] for no matches
 export const getBooks = async (req, res, next) => {
   try {
-    const books = await Book.find({});
-    res.json(books);
+    const { title, author } = req.query;
+    let query = {};
+
+    if (title || author) {
+      const searchConditions = [];
+      if (title) {
+        searchConditions.push({ title: { $regex: title, $options: 'i' } });
+      }
+      if (author) {
+        searchConditions.push({ author: { $regex: author, $options: 'i' } });
+      }
+      query.$or = searchConditions;
+      console.log('Search query applied:', query); // Debug log (remove in production)
+    } else {
+      // No query: return all books
+      console.log('No search query; returning all books'); // Debug log
+    }
+
+    const books = await Book.find(query);
+    console.log(`Found ${books.length} books for query: title="${title}", author="${author}"`); // Debug log
+    res.json(books); // Empty array [] if no matches
   } catch (error) {
+    console.error('getBooks error:', error); // Debug log
     next(error);
   }
 };
+
+
 
 // Borrow a book (Member only)
 // Updates only availability and borrowedBy
@@ -39,11 +57,10 @@ export const borrowBook = async (req, res, next) => {
     if (!book || !book.available) {
       return res.status(400).json({ message: 'Book not available' });
     }
-    // Use findByIdAndUpdate to avoid full schema validation
     const updatedBook = await Book.findByIdAndUpdate(
       id,
       { available: false, borrowedBy: req.user.id },
-      { new: true, runValidators: false } // Disable validators for this update
+      { new: true, runValidators: false }
     );
     res.json({ message: 'Book borrowed', book: updatedBook });
   } catch (error) {
@@ -59,11 +76,10 @@ export const returnBook = async (req, res, next) => {
     if (!book || book.available || book.borrowedBy.toString() !== req.user.id) {
       return res.status(400).json({ message: 'Cannot return this book' });
     }
-    // Use findByIdAndUpdate to avoid full schema validation
     const updatedBook = await Book.findByIdAndUpdate(
       id,
       { available: true, borrowedBy: null },
-      { new: true, runValidators: false } // Disable validators for this update
+      { new: true, runValidators: false }
     );
     res.json({ message: 'Book returned', book: updatedBook });
   } catch (error) {

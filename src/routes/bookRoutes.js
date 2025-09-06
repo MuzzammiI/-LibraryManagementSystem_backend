@@ -5,7 +5,7 @@ import { protect, adminOnly, memberOnly } from '../middlewares/authMiddleware.js
 const router = express.Router();
 
 router.post('/', protect, adminOnly, addBook);
-router.get('/', protect, getBooks); // Changed to get all books
+router.get('/', protect, getBooks); // Handles search via query params
 router.put('/:id/borrow', protect, memberOnly, borrowBook);
 router.put('/:id/return', protect, memberOnly, returnBook);
 router.put('/:id', protect, adminOnly, updateBook);
