@@ -85,13 +85,160 @@ Import the following Postman collection JSON into Postman for testing:
 
 ```json
 {
-  "info": {
-    "name": "Library Management API",
-    "description": "REST API for managing books with auth"
-  },
-  "item": [
-    // ... (full collection as provided in earlier responses)
-  ]
+  "overview": {
+    "title": "Library Management System API",
+    "description": "This Postman collection provides API endpoints for a Library Management System, enabling user authentication and book management operations. The collection is organized into two folders: Auth and Books, covering user registration, login, and book-related functionalities like adding, viewing, borrowing, returning, updating, deleting, and searching books.",
+    "collection_link": "https://web.postman.co/workspace/My-Workspace~f59fafd6-1a59-486e-8f23-b9e768aa9651/collection/31420548-99d249cf-67ab-4930-908b-b654c78398ae?action=share&source=copy-link&creator=31420548",
+    "key_features": [
+      {
+        "feature": "Authentication",
+        "description": "Register and log in users, generating JWT tokens for secure access."
+      },
+      {
+        "feature": "Book Management",
+        "description": "Perform CRUD operations on books with role-based access (admin or member)."
+      },
+      {
+        "feature": "Role-Based Access",
+        "description": "Admins can add, update, and delete books. Members can view, borrow, return, and search books."
+      },
+      {
+        "feature": "Search Capability",
+        "description": "Search books by title and/or author using query parameters."
+      }
+    ],
+    "api_endpoints": {
+      "auth_folder": [
+        {
+          "name": "Register",
+          "method": "POST",
+          "endpoint": "{{baseURL}}/api/auth/register",
+          "description": "Create a new user account."
+        },
+        {
+          "name": "Login",
+          "method": "POST",
+          "endpoint": "{{baseURL}}/api/auth/login",
+          "description": "Authenticate and obtain a JWT token."
+        }
+      ],
+      "books_folder": [
+        {
+          "name": "Add Book (Admin)",
+          "method": "POST",
+          "endpoint": "{{baseURL}}/api/books/",
+          "description": "Add a new book."
+        },
+        {
+          "name": "View Books",
+          "method": "GET",
+          "endpoint": "{{baseURL}}/api/books/",
+          "description": "List all books (admin or member)."
+        },
+        {
+          "name": "Borrow Book (Member)",
+          "method": "PUT",
+          "endpoint": "{{baseURL}}/api/books/:id/borrow",
+          "description": "Borrow a book by ID."
+        },
+        {
+          "name": "Return Book (Member)",
+          "method": "PUT",
+          "endpoint": "{{baseURL}}/api/books/:id/return",
+          "description": "Return a borrowed book."
+        },
+        {
+          "name": "Update Book (Admin)",
+          "method": "PUT",
+          "endpoint": "{{baseURL}}/api/books/:id",
+          "description": "Update book details."
+        },
+        {
+          "name": "Delete Book (Admin)",
+          "method": "DELETE",
+          "endpoint": "{{baseURL}}/api/books/:id",
+          "description": "Delete a book."
+        },
+        {
+          "name": "Search Books",
+          "method": "GET",
+          "endpoint": "{{baseURL}}/api/books/?title=<title>&author=<author>",
+          "description": "Search books by title and/or author."
+        }
+      ]
+    },
+    "setup_instructions": {
+      "access_collection": {
+        "step": "Open the shared link in Postman after signing in. Fork the collection to your workspace or request access if needed."
+      },
+      "configure_environment": {
+        "step": "Create a Postman environment with variables: `baseURL` (e.g., `http://localhost:5000`) and `token` (JWT token from Login endpoint)."
+      },
+      "authorization": {
+        "step": "Use `Bearer {{token}}` in the Authorization header for protected endpoints."
+      },
+      "testing_workflow": {
+        "step": "Start with Register and Login to create a user and get a token. Test book-related endpoints based on user role. Use query parameters for Search Books."
+      }
+    },
+    "usage_notes": {
+      "base_url": "Replace `{{baseURL}}` with your server’s URL (e.g., `http://localhost:5000`).",
+      "role_restrictions": {
+        "admin": "Add, update, delete books.",
+        "member": "Borrow, return books.",
+        "both": "View and search books."
+      },
+      "common_responses": [
+        {
+          "code": "200 OK",
+          "description": "Successful operation."
+        },
+        {
+          "code": "201 Created",
+          "description": "Resource created."
+        },
+        {
+          "code": "400 Bad Request",
+          "description": "Invalid input."
+        },
+        {
+          "code": "401 Unauthorized",
+          "description": "Missing/invalid token."
+        },
+        {
+          "code": "403 Forbidden",
+          "description": "Insufficient permissions."
+        },
+        {
+          "code": "404 Not Found",
+          "description": "Resource not found."
+        }
+      ]
+    },
+    "prerequisites": [
+      "Postman (web or desktop).",
+      "Access to the Library Management System API server.",
+      "User credentials for testing (admin and member roles)."
+    ],
+    "example_workflow": [
+      "Send a POST request to `{{baseURL}}/api/auth/register` to create a user.",
+      "Send a POST request to `{{baseURL}}/api/auth/login` to get a JWT token.",
+      "Save the token in the `token` environment variable.",
+      "Test protected endpoints (e.g., `POST {{baseURL}}/api/books/` for admins or `PUT {{baseURL}}/api/books/:id/borrow` for members).",
+      "Use the Search Books endpoint with query parameters to find specific books."
+    ],
+    "additional_resources": [
+      {
+        "name": "Postman Documentation",
+        "url": "https://learning.postman.com/docs/getting-started/introduction/",
+        "description": "For help with collections and environments."
+      },
+      {
+        "name": "Contact Creator",
+        "description": "Contact the collection creator (ID: 31420548) for access issues."
+      }
+    ]
+  }
 }
 ```
 
